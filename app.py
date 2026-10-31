@@ -40,7 +40,7 @@ def limpar_historico():
 # Função de autenticação simples
 def verificar_senha():
   def senha_correta():
-    if st.session_state["senha"] == "sua_senha_secreta_aqui":  # Mude sua senha aqui!
+    if st.session_state["senha"] == "S3nh@SECRETA":  # Mude sua senha aqui!
       st.session_state["senha_correta"] = True
       del st.session_state["senha"]
     else:
