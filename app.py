@@ -3,7 +3,7 @@ import re
 import streamlit as st
 
 # Configuração da página
-st.set_page_title(
+st.set_page_config(
     page_title="Contador e Ranking de Palavras", page_icon="📊", layout="centered"
 )
 
@@ -13,7 +13,7 @@ def verificar_senha():
   """Retorna True se o usuário digitou a senha correta."""
 
   def senha_correta():
-    if st.session_state["senha"] == "sua_senha_secreta_aqui":  # Mude a senha aqui!
+    if st.session_state["senha"] == "S3nh@SECRETA":  # Mude a senha aqui!
       st.session_state["senha_correta"] = True
       del st.session_state["senha"]  # Remove a senha da memória por segurança
     else:
