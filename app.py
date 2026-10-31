@@ -21,18 +21,16 @@ def carregar_historico():
     for linha in linhas:
       partes = linha.strip().split(" | ")
       if len(partes) == 2:
-        historico.append({"data": partes[0], "termo": partes[1]})
+        historico.append({"data": partes[0], "conteudo": partes[1]})
     return historico
   return []
 
 
-def salvar_no_historico(termo):
+def salvar_no_historico(conteudo):
   agora = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
-  # Lê o atual para evitar duplicatas consecutivas no topo
-  historico = carregar_historico()
-  if not historico or historico[0]["termo"] != termo:
-    with open(ARQUIVO_HISTORICO, "a", encoding="utf-8") as f:
-      f.write(f"{agora} | {termo}\n")
+  # Salva automaticamente no arquivo
+  with open(ARQUIVO_HISTORICO, "a", encoding="utf-8") as f:
+    f.write(f"{agora} | {conteudo}\n")
 
 
 def limpar_historico():
@@ -84,6 +82,13 @@ texto_usuario = st.text_area(
 )
 
 if texto_usuario:
+  # Salva automaticamente a entrada de texto assim que é processada (evitando duplicar se for o mesmo texto exato enviado seguidamente)
+  historico_atual = carregar_historico()
+  ultimo_registro = historico_atual[-1]["conteudo"] if historico_atual else ""
+
+  if texto_usuario.strip() != ultimo_registro:
+    salvar_no_historico(texto_usuario.strip())
+
   # 1. Separa o texto em frases
   frases_brutas = re.split(r"[.!?\n]+", texto_usuario)
   frases = [f.strip().lower() for f in frases_brutas if f.strip()]
@@ -102,7 +107,7 @@ if texto_usuario:
           "📝 Ranking de Frases",
           "🔤 Ranking de Palavras",
           "🔍 Mecanismo de Busca",
-          "📜 Histórico Persistente",
+          "📜 Histórico Salvo",
       ]
   )
 
@@ -149,11 +154,8 @@ if texto_usuario:
             " categorias."
         )
 
-      # Salva de forma persistente no arquivo
-      salvar_no_historico(termo_busca)
-
   with aba4:
-    st.subheader("📜 Histórico Salvo")
+    st.subheader("📜 Histórico de Entradas Salvas")
 
     historico_atual = carregar_historico()
 
@@ -163,6 +165,8 @@ if texto_usuario:
         st.rerun()
 
       for item in reversed(historico_atual):
-        st.markdown(f"- 🕒 `{item['data']}` — **{item['termo']}**")
+        st.markdown(f"🕒 **{item['data']}**")
+        st.info(item["conteudo"])
+        st.divider()
     else:
-      st.info("Nenhum histórico salvo ainda.")
+      st.info("Nenhuma entrada salva ainda.")
